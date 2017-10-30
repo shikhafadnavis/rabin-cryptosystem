@@ -16,6 +16,7 @@ import(
         "math/big"
         "io/ioutil"
 	"strings"
+	"crypto/sha256"
 	"os"
 )
 
@@ -196,12 +197,24 @@ func rsaDecrypt(num *big.Int, N *big.Int, P *big.Int, Q *big.Int) (*big.Int, *bi
 
 }
 
+func checkHash(num *big.Int) [32]byte{
+
+	numStr := num.String()
+	numHash := sha256.Sum256([]byte(numStr))
+
+	return numHash
+}
+
 func main(){
 
 	privateKeyFile := os.Args[1]
 	cipherStr := os.Args[2]
+	cipherStrLen := len(cipherStr)
+	cipherHash := cipherStr[cipherStrLen-64:cipherStrLen]
+	cipherOnly := cipherStr[0:cipherStrLen-64]
+
 	cipher := big.NewInt(0)
-	cipher.SetString(cipherStr, 10)
+	cipher.SetString(cipherOnly, 10)
 	privKeyByte, readErr := ioutil.ReadFile(privateKeyFile)
 	if readErr != nil{
 		panic(readErr)
@@ -220,15 +233,41 @@ func main(){
 	recoveredPInt.SetString(recoveredP,10)
 	recoveredQInt.SetString(recoveredQ,10)
 
-	fmt.Println("recovered P is: ", recoveredPInt)
-	fmt.Println("recovered Q is: ", recoveredQInt)
+	//fmt.Println("recovered P is: ", recoveredPInt)
+	//fmt.Println("recovered Q is: ", recoveredQInt)
 	
 	root1, root2, root3, root4 := rsaDecrypt(cipher, recoveredNInt, recoveredPInt, recoveredQInt)
-	fmt.Println("Possible Plaintext values: ")
+	//fmt.Println("Possible Plaintext values: ")
 	
-	fmt.Println("plaintext1 is: ", root1)
-        fmt.Println("plaintext2 is: ", root2)
-        fmt.Println("plaintext3 is: ", root3)
-        fmt.Println("plaintext4 is: ", root4)
+	//fmt.Println("plaintext1 is: ", root1)
+        //fmt.Println("plaintext2 is: ", root2)
+        //fmt.Println("plaintext3 is: ", root3)
+        //fmt.Println("plaintext4 is: ", root4)
+
+	root1Hash := checkHash(root1)
+	root1HashStr := fmt.Sprintf("%x", root1Hash)
+	root2Hash := checkHash(root2)
+        root2HashStr := fmt.Sprintf("%x", root2Hash)
+	root3Hash := checkHash(root3)
+        root3HashStr := fmt.Sprintf("%x", root3Hash)
+	root4Hash := checkHash(root4)
+        root4HashStr := fmt.Sprintf("%x", root4Hash)
+
+	if root1HashStr == cipherHash{
+		fmt.Println("Plaintext found!: ", root1)
+	}
+
+	if root2HashStr == cipherHash{
+                fmt.Println("Plaintext found!: ", root2)
+        }
+	
+	if root3HashStr == cipherHash{
+                fmt.Println("Plaintext found!: ", root3)
+        }
+
+	if root4HashStr == cipherHash{
+                fmt.Println("Plaintext found!: ", root4)
+        }
+
 
 }
