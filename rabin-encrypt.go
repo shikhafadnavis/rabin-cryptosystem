@@ -10,10 +10,10 @@ package main
 
 import(
         "fmt"
-        //crypt "crypto/rand"
         "math/big"
         "io/ioutil"
 	"os"
+	"crypto/sha256"
 )
 
 func squareAndMultiplyWithMod(a *big.Int, a2 *big.Int, b *big.Int, c *big.Int) (*big.Int){
@@ -53,10 +53,13 @@ func squareAndMultiplyWithMod(a *big.Int, a2 *big.Int, b *big.Int, c *big.Int) (
 
 }
 
-func rabinEncrypt(num *big.Int, N *big.Int) *big.Int{
+func rabinEncrypt(num *big.Int, N *big.Int, plaintextStr string) (*big.Int, string){
 
 	res := squareAndMultiplyWithMod(num, num, big.NewInt(2), N)
-	return res
+	plainHash := sha256.Sum256([]byte(plaintextStr))
+        plainHashHex := fmt.Sprintf("%x",plainHash)
+
+	return res, plainHashHex
 
 }
 
@@ -77,8 +80,12 @@ func main(){
 	recoveredNInt := big.NewInt(0)
 	recoveredNInt.SetString(pubKeyStr,10)	
  
-	cipher := rabinEncrypt(plaintext, recoveredNInt)
-	fmt.Println("Encrypted text: ", cipher)
+	cipher, plainHashStr := rabinEncrypt(plaintext, recoveredNInt, plaintextStr)
+	
+	cipherAppend := cipher.String() + plainHashStr
+
+	fmt.Println("Encrypted text: ", cipherAppend)
+	
 	
 
 }
