@@ -108,11 +108,14 @@ func calculateRoots(mp *big.Int, mq *big.Int, yp *big.Int, yq *big.Int, p *big.I
 
 	inter1 := big.NewInt(0)
 	inter2 := big.NewInt(0)
-
+	fmt.Println("p*mq is :", big.NewInt(0).Mul(p,mq))
+	fmt.Println("yp*p is :", big.NewInt(0).Mul(yp,p))
 	inter1.Mul(yp, p)
 	inter1.Mul(inter1, mq)
 	inter2.Mul(yq,q)
 	inter2.Mul(inter2, mp)
+
+	fmt.Println("inter1 before negative handling is: ", inter1)
 
 	if inter1.Cmp(big.NewInt(0)) == -1{
 		quo := big.NewInt(0)
@@ -130,8 +133,8 @@ func calculateRoots(mp *big.Int, mq *big.Int, yp *big.Int, yq *big.Int, p *big.I
                 inter2.Add(inter2,quo)
         }
 
-	//fmt.Println("intermediate1 is :", inter1)
-	//fmt.Println("intermediate2 is :", inter2)
+	fmt.Println("intermediate1 is :", inter1)
+	fmt.Println("intermediate2 is :", inter2)
 
 	root1.Add(inter1, inter2)
 	root1.Mod(root1,n)
@@ -239,10 +242,10 @@ func main(){
 	root1, root2, root3, root4 := rsaDecrypt(cipher, recoveredNInt, recoveredPInt, recoveredQInt)
 	//fmt.Println("Possible Plaintext values: ")
 	
-	//fmt.Println("plaintext1 is: ", root1)
-        //fmt.Println("plaintext2 is: ", root2)
-        //fmt.Println("plaintext3 is: ", root3)
-        //fmt.Println("plaintext4 is: ", root4)
+	fmt.Println("plaintext1 is: ", root1)
+        fmt.Println("plaintext2 is: ", root2)
+        fmt.Println("plaintext3 is: ", root3)
+        fmt.Println("plaintext4 is: ", root4)
 
 	root1Hash := checkHash(root1)
 	root1HashStr := fmt.Sprintf("%x", root1Hash)
