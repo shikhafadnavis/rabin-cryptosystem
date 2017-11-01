@@ -1,1 +1,38 @@
-This project implements Rabin Cryptosystem is Go
+This project implements Rabin cryptosystem in the Go language.
+
+It contains three files:
+
+============================================================================================== 
+1. rabin-keygen.go
+Sample run:
+./rabin-keygen publicKey.txt privKey.txt
+
+This file generates Public and Private key pair for Rabin Cryptosystem and writes 
+onto the respective files.
+Format of public key : (N)
+Format of private key : (N,p,q) 
+
+==============================================================================================
+2. rabin-encrypt.go
+Sample Run:
+./rabin-encrypt publicKey.txt 223434534456586704545682734825348481
+
+This file takes the public key file as an argument and the plaintext to be 
+encrypted in decimal format. Outputs the ciphertext on the terminal
+
+==============================================================================================
+3. rabin-decrypt.go
+Sample Run:
+./rabin-decrypt rabin-priv.txt 1622238447562744263235781537449505584566247663702351489687139002565a2d570f636e1a6ed564a36a25f70f7b9ea500a5c75c93493378db4e78a2f74
+
+This file takes the private key file as an argument and the ciphertext to be 
+decrypted in decimal format. Outputs the plaintext on the terminal
+
+==============================================================================================
+
+
+Go packages used:
+math/big
+crypto/rand
+strings
+
