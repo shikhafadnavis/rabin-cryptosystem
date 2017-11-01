@@ -108,14 +108,12 @@ func calculateRoots(mp *big.Int, mq *big.Int, yp *big.Int, yq *big.Int, p *big.I
 
 	inter1 := big.NewInt(0)
 	inter2 := big.NewInt(0)
-	fmt.Println("p*mq is :", big.NewInt(0).Mul(p,mq))
-	fmt.Println("yp*p is :", big.NewInt(0).Mul(yp,p))
 	inter1.Mul(yp, p)
 	inter1.Mul(inter1, mq)
 	inter2.Mul(yq,q)
 	inter2.Mul(inter2, mp)
 
-	fmt.Println("inter1 before negative handling is: ", inter1)
+//	fmt.Println("inter1 before negative handling is: ", inter1)
 
 	if inter1.Cmp(big.NewInt(0)) == -1{
 		quo := big.NewInt(0)
@@ -132,9 +130,6 @@ func calculateRoots(mp *big.Int, mq *big.Int, yp *big.Int, yq *big.Int, p *big.I
                 quo.Mul(quo,n)
                 inter2.Add(inter2,quo)
         }
-
-	fmt.Println("intermediate1 is :", inter1)
-	fmt.Println("intermediate2 is :", inter2)
 
 	root1.Add(inter1, inter2)
 	root1.Mod(root1,n)
@@ -170,8 +165,6 @@ func rsaDecrypt(num *big.Int, N *big.Int, P *big.Int, Q *big.Int) (*big.Int, *bi
 	mp = squareAndMultiplyWithMod(num, num, mpExp, P)
 	mq = squareAndMultiplyWithMod(num, num, mqExp, Q)
 
-	fmt.Println("mp is: ", mp)
-	fmt.Println("mq is: ", mq)
 	// Use Extended Eucledian Algo to find yp and yq
 
 	yp := big.NewInt(0)
@@ -182,17 +175,10 @@ func rsaDecrypt(num *big.Int, N *big.Int, P *big.Int, Q *big.Int) (*big.Int, *bi
 	PDup.Set(P)
 	QDup.Set(Q)
 
-	val1, val2, val3 := extendedEucledian(PDup, QDup)
-
-	fmt.Println("Val1 is: ", val1)
-	fmt.Println("Val2 is: ", val2)
-	fmt.Println("Val3 is: ", val3)	
+	_, val2, val3 := extendedEucledian(PDup, QDup)
 
 	yp.Set(val2)
 	yq.Set(val3)
-
-	fmt.Println("yp is: ", yp)
-	fmt.Println("yq is: ", yq)
 
 	root1, root2, root3, root4 := calculateRoots(mp, mq, yp, yq, P, Q, N)
 
@@ -225,8 +211,12 @@ func main(){
 	
 	privKeyStr := strings.Split(string(privKeyByte), ",")
 	recoveredN := privKeyStr[0]
+	recoveredN = recoveredN[1 : len(recoveredN)]
+	
 	recoveredP := privKeyStr[1]
+	
 	recoveredQ := privKeyStr[2]
+	recoveredQ = recoveredQ[0: len(recoveredQ)-1]
 	
 	recoveredNInt := big.NewInt(0)
 	recoveredPInt := big.NewInt(0)

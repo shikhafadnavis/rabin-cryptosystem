@@ -75,6 +75,7 @@ func main(){
 	}
 	
 	pubKeyStr := string(pubKeyByte)
+	pubKeyStr = pubKeyStr[1: len(pubKeyStr)-1]
 
 
 	recoveredNInt := big.NewInt(0)

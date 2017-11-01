@@ -166,19 +166,19 @@ func randGenerate() *big.Int{
 		randNumByte := make([]byte,64)
 		crypt.Read(randNumByte)
 		randNum.SetBytes(randNumByte)
-		fmt.Println("random number chosen is: ", randNum)
+//		fmt.Println("random number chosen is: ", randNum)
 		operation := big.NewInt(0)
 		operation.Mod(randNum, big.NewInt(2))
 		if operation.Cmp(big.NewInt(0)) == 0{
-			fmt.Println("Composite Number")
+//			fmt.Println("Composite Number")
 			//generate random again
 		}else{
 			primeRes := millerRabinPrime(randNum)
 			if primeRes == true{
-				fmt.Println("\n Prime number")
+//				fmt.Println("\n Prime number")
 				break
 			}else{
-				fmt.Println("\n Composite Number")
+//				fmt.Println("\n Composite Number")
 			}
 		}
 	}
@@ -190,6 +190,9 @@ func randGenerate() *big.Int{
 
 func writePubKey(N *big.Int, filename string){
 	NStr := N.String()
+	openB := "("
+	closeB := ")"
+	NStr = openB + NStr + closeB
 	eFileByte := []byte(NStr)
 	writeErr := ioutil.WriteFile(filename,eFileByte, 0644)
 	if writeErr != nil{
@@ -199,11 +202,13 @@ func writePubKey(N *big.Int, filename string){
 
 func writePrivKey(N *big.Int, p *big.Int, q *big.Int, filename string){
 	NStr := N.String()
+	openB := "("
+        closeB := ")"
 	comma := ","
 	pStr := p.String()
 	qStr := q.String()
 
-	dFileStr := NStr + comma + pStr + comma + qStr
+	dFileStr := openB + NStr + comma + pStr + comma + qStr + closeB
 	dFileByte := []byte(dFileStr)
 	writeErr := ioutil.WriteFile(filename, dFileByte, 0644)
 	if writeErr != nil{
@@ -219,18 +224,42 @@ func main(){
 	modulus := big.NewInt(0)
 
 	// Generate "p" and "q"
-	prime1 := randGenerate()
-	prime2 := randGenerate()
+	prime1 := big.NewInt(0)
+	prime2 := big.NewInt(0)
+
+	prime1Mod := big.NewInt(0)
+        prime2Mod := big.NewInt(0)
+
+	for true{
+		prime1 = randGenerate()
+		prime1Mod.Mod(prime1, big.NewInt(4))
+
+		if prime1Mod.Cmp(big.NewInt(3)) == 0{
+			break
+		}
+	}
+
+	for true{
+                prime2 = randGenerate()
+                prime2Mod.Mod(prime2, big.NewInt(4))
+
+                if prime2Mod.Cmp(big.NewInt(3)) == 0{
+                        break
+                }
+        }
 
 	
-	// Calculate "N"	
+	// Calculate "N"
+
+//	prime1 := big.NewInt(7)
+//	prime2 := big.NewInt(11)	
 	modulus.Mul(prime1, prime2)
 
 
 
-	fmt.Println("Prime 1 is: ", prime1)
-        fmt.Println("Prime 2 is: ", prime2)
-        fmt.Println("Public Modulus is: ", modulus)
+//	fmt.Println("Prime 1 is: ", prime1)
+//        fmt.Println("Prime 2 is: ", prime2)
+//        fmt.Println("Public Modulus is: ", modulus)
 
 
 	// Write keys to respective files
